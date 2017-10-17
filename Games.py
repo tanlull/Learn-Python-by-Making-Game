@@ -17,7 +17,7 @@ def checkCollision(x,y,treasureX,treasureY):
             collisionState=True
         elif x+35>=treasureX and x+35<=treasureX+35:            
             y=650
-            collisionState=True
+            collisionState=True 
     return collisionState,y
 
 
