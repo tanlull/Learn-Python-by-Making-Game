@@ -1,5 +1,5 @@
 import pygame as pg
-
+pg.init()
 
 def checkCollision(x,y,treasureX,treasureY):
     global screen,textWin
@@ -21,7 +21,13 @@ def checkCollision(x,y,treasureX,treasureY):
     return collisionState,y
 
 
-pg.init()
+def createEnemyImage(imageName):
+    enemyImage = pg.image.load(imageName)
+    enemyImage = pg.transform.scale(enemyImage,(35,40))
+    enemyImage = enemyImage.convert_alpha()
+    return enemyImage
+
+
 screen  = pg.display.set_mode((900,700))
 
 finished = False
@@ -39,18 +45,22 @@ treasureImage = pg.image.load("treasure.png")
 treasureImage = pg.transform.scale(treasureImage,(35,40))
 treasureImage=treasureImage.convert_alpha()
 
-enemyImage = pg.image.load("enemy.png")
-enemyImage = pg.transform.scale(enemyImage,(35,40))
-enemyImage = enemyImage.convert_alpha()
-
-treasureX=450-35/2
-treasureY=50
 
 enemyX = 100
 enemyY = 580-10
 movingRight = True
 
-enemies = [(enemyX,enemyY,movingRight)] 
+enemyImageName = ["enemy0.png","enemy1.png","enemy2.png"]
+
+
+enemyImage = createEnemyImage(enemyImageName[0])
+
+
+enemies = [(enemyImage,enemyX,enemyY,movingRight)] 
+
+treasureX=450-35/2
+treasureY=50
+
 
 font = pg.font.SysFont("comicsans",60)
 level = 1
@@ -73,8 +83,9 @@ while finished == False:
     pressedKeys = pg.key.get_pressed()
     #print pressedKeys[pg.K_SPACE]
     
+
     enemyIndex = 0 
-    for enemyX,enemyY,movingRight in enemies:
+    for enemyImage,enemyX,enemyY,movingRight in enemies:
         if(enemyX >= 800-35):
             movingRight=False
         elif enemyX <=50:
@@ -84,7 +95,7 @@ while finished == False:
             enemyX += 5*level
         else:
             enemyX -= 5*level
-        enemies[enemyIndex] = (enemyX,enemyY,movingRight)
+        enemies[enemyIndex] = (enemyImage,enemyX,enemyY,movingRight)
         enemyIndex +=1
 
     if pressedKeys[pg.K_SPACE] == 1 or pressedKeys[pg.K_UP]:
@@ -109,8 +120,8 @@ while finished == False:
     screen.blit(playerImage,(x,y))
 
     enemyIndex=0
-    for enemyX,enemyY,movingRight in enemies:        
-        screen.blit(enemyImage,(enemyX,enemyY))
+    for enemyImage,enemyX,enemyY,movingRight in enemies:        
+        screen.blit(enemyImage,(enemyX,enemyY)) # Add new Enemy
         colliasionEnemy,y = checkCollision(x,y,enemyX,enemyY)        
         if (colliasionEnemy ==True):
             name = enemyNames[enemyIndex]
@@ -126,7 +137,11 @@ while finished == False:
     
     if(colliasionTreasure==True):
         level +=1
-        enemies.append((enemyX-50*level,enemyY-50*level,False))
+        enemyImageIndex = enemyIndex
+        if enemyIndex >= len(enemyImageName) - 1 :  #Prevent image overflow
+            enemyImageIndex = enemyIndex % len(enemyImageName) 
+        enemyImage = createEnemyImage(enemyImageName[enemyImageIndex])
+        enemies.append((enemyImage,enemyX-50*level,enemyY-50*level,False))
         textWin = font.render("You've reached the next Level "+str(level),True,(0,0,0))
         screen.blit(textWin,(450-textWin.get_width()/2,350-textWin.get_height()/2))
         pg.display.flip()
