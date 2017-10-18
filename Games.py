@@ -87,8 +87,16 @@ while finished == False:
         enemies[enemyIndex] = (enemyX,enemyY,movingRight)
         enemyIndex +=1
 
-    if pressedKeys[pg.K_SPACE] == 1:
+    if pressedKeys[pg.K_SPACE] == 1 or pressedKeys[pg.K_UP]:
         y-=5
+    elif pressedKeys[pg.K_DOWN] == 1:
+        y+=5
+    elif pressedKeys[pg.K_LEFT] == 1:
+        if(x>0) : 
+            x-=5
+    elif pressedKeys[pg.K_RIGHT] == 1:
+        if(x<900-40) : 
+            x+=5   
     #rectOne = pg.Rect(x,y,30,30)
 
     #color = (0,0,255)
